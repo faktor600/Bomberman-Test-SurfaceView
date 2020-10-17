@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Bomber Man</string>
+
+    <string name="level_key">level</string>
+    <string name="score_key">score</string>
+
+    <string name="main_screen_start">START</string>
+    <string name="main_screen_continue">CONTINUE</string>
+    <string name="main_screen_top">TOP</string>
+
 </resources>
