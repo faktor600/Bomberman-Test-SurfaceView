@@ -14,6 +14,6 @@ class GameDrawer(context: Context) : GameView(context) {
     }
 
     override fun initDrawLogic() {
-        TODO("Not yet implemented")
+
     }
 }
