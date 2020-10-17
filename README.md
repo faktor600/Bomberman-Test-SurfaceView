@@ -1,1 +1,1 @@
-# Bomberman-Test-SurfaceView
+Старая игра BomberMan на основе SurfaceView
