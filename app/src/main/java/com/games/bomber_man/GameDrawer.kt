@@ -2,10 +2,12 @@ package com.games.bomber_man
 
 import android.app.Application
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
+import com.games.bomber_man.drawer_elements.Bomber
 import com.games.bomber_man.drawer_elements.Score
 import com.games.bomber_man.drawer_elements.Wall
 import com.games.bomber_man.game_engine.GameView
@@ -29,6 +31,8 @@ class GameDrawer(
 
     private var arrayDraws: ArrayList<DrawOnCanvas> = ArrayList()
 
+    private val applicationClass = application as com.games.bomber_man.Application
+
     init {
         val widthField = 31 * (widthScreen / 16)
         val heightFieldScore = heightScreen / 10
@@ -41,10 +45,20 @@ class GameDrawer(
         arrayDraws.add(Wall(
             widthField  = widthField,
             heightField = heightFieldScore,
-            wallBitmap = (application as com.games.bomber_man.Application).getWall(),
+            wallBitmap = applicationClass.getWall(),
             field = field,
             heightWall = heightGameTitle,
             widthWall = widthGameTitle,
+            resources = contextApp.resources
+        ))
+        arrayDraws.add(Bomber(
+            widthField = widthField,
+            heightField = heightFieldScore,
+            widthTitle = widthGameTitle,
+            heightTitle = heightGameTitle,
+            field = field,
+            bitmapBomber = applicationClass.getBomber(),
+            bitmapDeath = applicationClass.getBomberDeathAnimation(),
             resources = contextApp.resources
         ))
     }
