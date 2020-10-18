@@ -26,7 +26,7 @@ class StartActivity : AppCompatActivity() {
         val widthScreen = windowManager.defaultDisplay.width
         val heightScreen = windowManager.defaultDisplay.height
         setContentView(GameDrawer(
-            context = this,
+            contextApp = this,
             application = application,
             widthScreen = widthScreen,
             heightScreen = heightScreen,
@@ -38,7 +38,7 @@ class StartActivity : AppCompatActivity() {
         val widthScreen = windowManager.defaultDisplay.width
         val heightScreen = windowManager.defaultDisplay.height
         setContentView(GameDrawer(
-            context = this,
+            contextApp = this,
             application = application,
             widthScreen = widthScreen,
             heightScreen = heightScreen,

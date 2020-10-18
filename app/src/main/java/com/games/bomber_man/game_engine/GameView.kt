@@ -9,15 +9,15 @@ abstract class GameView(context: Context) : SurfaceView(context) {
 
     abstract fun getSurfaceHolderCallback(): SurfaceHolder.Callback
 
-    abstract fun initDrawLogic()
+    abstract fun initDrawLogic(canvas: Canvas)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         holder.addCallback(getSurfaceHolderCallback())
     }
 
-    override fun draw(canvas: Canvas?) {
+    override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        initDrawLogic()
+        initDrawLogic(canvas)
     }
 }
