@@ -23,10 +23,26 @@ class StartActivity : AppCompatActivity() {
     }
 
     fun onClickStart(view: View) {
-        setContentView(GameDrawer(this))
+        val widthScreen = windowManager.defaultDisplay.width
+        val heightScreen = windowManager.defaultDisplay.height
+        setContentView(GameDrawer(
+            context = this,
+            application = application,
+            widthScreen = widthScreen,
+            heightScreen = heightScreen,
+            level = 0
+        ))
     }
 
     fun onClickContinue(view: View) {
-        setContentView(GameDrawer(this))
+        val widthScreen = windowManager.defaultDisplay.width
+        val heightScreen = windowManager.defaultDisplay.height
+        setContentView(GameDrawer(
+            context = this,
+            application = application,
+            widthScreen = widthScreen,
+            heightScreen = heightScreen,
+            level = 0
+        ))
     }
 }
