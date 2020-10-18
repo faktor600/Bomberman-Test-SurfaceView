@@ -8,4 +8,6 @@
     <string name="main_screen_continue">CONTINUE</string>
     <string name="main_screen_top">TOP</string>
 
+    <string name="game_time_string">TIME</string>
+    <string name="game_lives_left">LEFT</string>
 </resources>
