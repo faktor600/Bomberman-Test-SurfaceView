@@ -4,8 +4,9 @@ import android.content.Context
 import android.graphics.Canvas
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import com.games.bomber_man.utils.HolderCallback
 
-abstract class GameView(context: Context) : SurfaceView(context) {
+abstract class GameView(context: Context): SurfaceView(context) {
 
     abstract fun getSurfaceHolderCallback(): SurfaceHolder.Callback
 

@@ -30,7 +30,8 @@ class StartActivity : AppCompatActivity() {
             application = application,
             widthScreen = widthScreen,
             heightScreen = heightScreen,
-            level = 0
+            level = 0,
+            lives = 3
         ))
     }
 
@@ -42,7 +43,8 @@ class StartActivity : AppCompatActivity() {
             application = application,
             widthScreen = widthScreen,
             heightScreen = heightScreen,
-            level = 0
+            level = 0,
+            lives = 3
         ))
     }
 }
