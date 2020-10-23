@@ -8,6 +8,7 @@ import android.graphics.Rect
 import androidx.core.content.res.ResourcesCompat
 import com.games.bomber_man.R
 import com.games.bomber_man.game_engine.LivingObject
+import com.games.bomber_man.utils.FindBomber
 
 class Bomber(
 
@@ -26,8 +27,16 @@ class Bomber(
 
     private var animationList = ArrayList<Bitmap>()
 
-    private var isStartGame = true
     private var currentAnimation = 4
+    private var action = ""
+    private var isMoving = false
+
+    private var rect: Rect = Rect(
+        widthTitle * 1,
+        heightTitle * 1 + heightField,
+        widthTitle * 2,
+        heightTitle * 2 + heightField
+    )
 
     init {
         val widthOneAnimation = bitmapBomber.width / 6
@@ -47,42 +56,57 @@ class Bomber(
     }
 
     override fun moveObject(canvas: Canvas) {
-        if(isStartGame){
-            canvas.drawBitmap(
-                animationList[currentAnimation],
-                null,
-                Rect(
-                    widthTitle * 1,
-                    heightTitle * 1 + heightField,
-                    widthTitle * 2,
-                    heightTitle * 2 + heightField
-                ),
-                null
-            )
-        }else{
-            val bomberCoordinates = findBomberMan()
-            canvas.drawBitmap(
-                animationList[4],
-                null,
-                Rect(
-                    widthTitle * bomberCoordinates[1],
-                    heightTitle * bomberCoordinates[0] + heightField,
-                    widthTitle * (bomberCoordinates[1] + 1),
-                    heightTitle * (bomberCoordinates[0] + 1) + heightField
-                ),
-                null
-            )
-        }
-    }
-
-    private fun findBomberMan(): Array<Int>{
-        for(i in 1..12){
-            for(j in 1..30){
-                if(field[i][j] == 9){
-                    return arrayOf(i, j)
+        if(isMoving){
+            when(action){
+                "UP" -> {
+                    if(currentAnimation < 11 || currentAnimation == 9){
+                        currentAnimation++
+                    }else if(currentAnimation !in 9..11){
+                        currentAnimation = 9
+                    }else if(currentAnimation == 11 || currentAnimation > 9){
+                        currentAnimation--
+                    }
+                }
+                "DOWN" -> {
+                    if(currentAnimation in 3..5 && currentAnimation != 5){
+                        currentAnimation++
+                    }else if(currentAnimation == 5 || currentAnimation !in 3..5){
+                        currentAnimation = 3
+                    }
+                }
+                "RIGHT" -> {
+                    if(currentAnimation in 6..8 && currentAnimation != 8){
+                        currentAnimation++
+                    }else if(currentAnimation == 8 || currentAnimation !in 6..8){
+                        currentAnimation = 6
+                    }
+                }
+                "LEFT" -> {
+                    if(currentAnimation in 0..2 && currentAnimation != 2){
+                        currentAnimation++
+                    }else if(currentAnimation == 2 || currentAnimation !in 0..2){
+                        currentAnimation = 0
+                    }
                 }
             }
         }
-        return arrayOf(0, 0)
+        canvas.drawBitmap(
+            animationList[currentAnimation],
+            null,
+            rect,
+            null
+        )
+    }
+
+    fun setBomberRect(rect: Rect){
+        this.rect = rect
+    }
+
+    fun setAction(action: String){
+        this.action = action
+    }
+
+    fun isBomberMoving(moving: Boolean){
+        isMoving = moving
     }
 }
