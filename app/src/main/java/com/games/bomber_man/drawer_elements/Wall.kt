@@ -20,9 +20,25 @@ class Wall(
 ) : DrawOnCanvas {
 
     private val paint: Paint = Paint()
+    private var arrayStaticWalls: ArrayList<Rect> = ArrayList()
 
     init {
         paint.color = ResourcesCompat.getColor(resources, R.color.fieldColor, null)
+
+        for(i in 0..12){
+            for(j in 0..30){
+                if(field[i][j] == 1) {
+                    arrayStaticWalls.add(
+                        Rect(
+                            widthWall * j,
+                            heightField + heightWall * i,
+                            widthWall * (j + 1),
+                            heightField + heightWall * (i + 1)
+                        )
+                    )
+                }
+            }
+        }
     }
 
     override fun draw(canvas: Canvas) {
@@ -34,18 +50,15 @@ class Wall(
             paint
         )
 
+        var count = 0
+
         for(i in 0..12){
             for(j in 0..30){
                 if(field[i][j] == 1){
                     canvas.drawBitmap(
                         wallBitmap,
                         null,
-                        Rect(
-                            widthWall * j,
-                            heightField + heightWall * i,
-                            widthWall * (j + 1),
-                            heightField + heightWall * (i + 1)
-                        ),
+                        arrayStaticWalls[count++],
                         null
                     )
                 }
