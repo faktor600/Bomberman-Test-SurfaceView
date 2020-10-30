@@ -11,6 +11,4 @@ interface GameInputObserver {
     fun leftAction()
 
     fun setBomb()
-
-    fun isButtonTouched(isTouched: Boolean, action: String)
 }

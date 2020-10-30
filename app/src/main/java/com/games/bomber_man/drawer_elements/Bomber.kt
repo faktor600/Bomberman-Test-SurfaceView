@@ -3,12 +3,9 @@ package com.games.bomber_man.drawer_elements
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Rect
-import androidx.core.content.res.ResourcesCompat
-import com.games.bomber_man.R
 import com.games.bomber_man.game_engine.LivingObject
-import com.games.bomber_man.utils.FindBomber
+import com.games.bomber_man.utils.Move
 
 class Bomber(
 
@@ -23,13 +20,17 @@ class Bomber(
 
 ) : LivingObject() {
 
+    private val MAX_TIME_STATE = 2
+
     override var isAlive: Boolean = true
 
     private var animationList = ArrayList<Bitmap>()
 
     private var currentAnimation = 4
-    private var action = ""
+    private var isForward = true
+    private var action: Move = Move.NO_MOVE
     private var isMoving = false
+    private var animationTimeState = 0
 
     private var rect: Rect = Rect(
         widthTitle * 1,
@@ -58,35 +59,17 @@ class Bomber(
     override fun moveObject(canvas: Canvas) {
         if(isMoving){
             when(action){
-                "UP" -> {
-                    if(currentAnimation < 11 || currentAnimation == 9){
-                        currentAnimation++
-                    }else if(currentAnimation !in 9..11){
-                        currentAnimation = 9
-                    }else if(currentAnimation == 11 || currentAnimation > 9){
-                        currentAnimation--
-                    }
+                Move.UP -> {
+                    moveAnimation(arrayOf(9, 10, 11))
                 }
-                "DOWN" -> {
-                    if(currentAnimation in 3..5 && currentAnimation != 5){
-                        currentAnimation++
-                    }else if(currentAnimation == 5 || currentAnimation !in 3..5){
-                        currentAnimation = 3
-                    }
+                Move.DOWN -> {
+                    moveAnimation(arrayOf(3, 4, 5))
                 }
-                "RIGHT" -> {
-                    if(currentAnimation in 6..8 && currentAnimation != 8){
-                        currentAnimation++
-                    }else if(currentAnimation == 8 || currentAnimation !in 6..8){
-                        currentAnimation = 6
-                    }
+                Move.RIGHT -> {
+                    moveAnimation(arrayOf(6, 7, 8))
                 }
-                "LEFT" -> {
-                    if(currentAnimation in 0..2 && currentAnimation != 2){
-                        currentAnimation++
-                    }else if(currentAnimation == 2 || currentAnimation !in 0..2){
-                        currentAnimation = 0
-                    }
+                Move.LEFT -> {
+                    moveAnimation(arrayOf(0, 1, 2))
                 }
             }
         }
@@ -102,11 +85,34 @@ class Bomber(
         this.rect = rect
     }
 
-    fun setAction(action: String){
+    fun setAction(action: Move){
         this.action = action
     }
 
     fun isBomberMoving(moving: Boolean){
         isMoving = moving
+    }
+
+    private fun moveAnimation(array: Array<Int>){
+        if(currentAnimation == array[1] && isForward && animationTimeState == MAX_TIME_STATE){
+            currentAnimation++
+            animationTimeState = 0
+        }else if(currentAnimation == array[2] && animationTimeState == MAX_TIME_STATE){
+            isForward = false
+            currentAnimation --
+            animationTimeState = 0
+        }else if(currentAnimation == array[0] && animationTimeState == MAX_TIME_STATE){
+            isForward = true
+            currentAnimation++
+            animationTimeState = 0
+        }else if(currentAnimation == array[1] && !isForward && animationTimeState == MAX_TIME_STATE){
+            currentAnimation--
+            animationTimeState = 0
+        }else if(currentAnimation !in array){
+            currentAnimation = array[0]
+            animationTimeState = 0
+        }else{
+            animationTimeState++
+        }
     }
 }

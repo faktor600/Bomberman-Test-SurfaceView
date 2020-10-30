@@ -2,11 +2,9 @@ package com.games.bomber_man
 
 import android.app.Application
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
-import android.view.GestureDetector
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
 import com.games.bomber_man.drawer_elements.Arrows
@@ -43,12 +41,10 @@ class GameDrawer(
 
     private var arrayDraws: ArrayList<DrawOnCanvas> = ArrayList()
 
-    private var actionButton = ""
+    private var actionButton = Move.NO_MOVE
     private var isTouched = false
 
     private val gameInputObserver: GameInputObserver = object : GameInputObserver{
-
-        private val checkCollision = CheckCollision()
 
         override fun upAction() {
             bomberCoordinates[0] = bomberCoordinates[0] - speedBomber
@@ -97,8 +93,10 @@ class GameDrawer(
         override fun setBomb() {
 
         }
+    }
 
-        override fun isButtonTouched(isTouched: Boolean, action: String) {
+    private val inputObserver: InputObserver = object : InputObserver{
+        override fun isButtonTouched(isTouched: Boolean, action: Move) {
             if(isTouched){
                 actionButton = action
             }
@@ -107,7 +105,7 @@ class GameDrawer(
     }
 
     private val applicationClass = application as com.games.bomber_man.Application
-    private val onTouchEventGame = OnTouchEventGame(heightScreen, widthScreen, gameInputObserver)
+    private val onTouchEventGame = OnTouchEventGame(heightScreen, widthScreen, inputObserver)
 
     init {
 
@@ -150,11 +148,11 @@ class GameDrawer(
         if(isTouched){
             bomber.isBomberMoving(true)
             when(actionButton){
-                "RIGHT" -> gameInputObserver.rightAction()
-                "LEFT" -> gameInputObserver.leftAction()
-                "UP" -> gameInputObserver.upAction()
-                "DOWN" -> gameInputObserver.downAction()
-                "BOMB" -> gameInputObserver.setBomb()
+                Move.RIGHT -> gameInputObserver.rightAction()
+                Move.LEFT -> gameInputObserver.leftAction()
+                Move.UP -> gameInputObserver.upAction()
+                Move.DOWN -> gameInputObserver.downAction()
+                Move.BOMB -> gameInputObserver.setBomb()
             }
         }else{
             bomber.isBomberMoving(false)
