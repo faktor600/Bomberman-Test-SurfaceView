@@ -24,21 +24,7 @@ class Wall(
 
     init {
         paint.color = ResourcesCompat.getColor(resources, R.color.fieldColor, null)
-
-        for(i in 0..12){
-            for(j in 0..30){
-                if(field[i][j] == 1) {
-                    arrayStaticWalls.add(
-                        Rect(
-                            widthWall * j,
-                            heightField + heightWall * i,
-                            widthWall * (j + 1),
-                            heightField + heightWall * (i + 1)
-                        )
-                    )
-                }
-            }
-        }
+        setNewWallsRect(0)
     }
 
     override fun draw(canvas: Canvas) {
@@ -60,6 +46,26 @@ class Wall(
                         null,
                         arrayStaticWalls[count++],
                         null
+                    )
+                }
+            }
+        }
+    }
+
+    fun setNewWallsRect(velocity: Int){
+        if(arrayStaticWalls.size != 0 && velocity != 0){
+            arrayStaticWalls.clear()
+        }
+        for(i in 0..12){
+            for(j in 0..30){
+                if(field[i][j] == 1) {
+                    arrayStaticWalls.add(
+                        Rect(
+                            widthWall * j + velocity,
+                            heightField + heightWall * i,
+                            widthWall * (j + 1) + velocity,
+                            heightField + heightWall * (i + 1)
+                        )
                     )
                 }
             }
