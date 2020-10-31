@@ -3,11 +3,13 @@ package com.games.bomber_man
 import android.app.Application
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
+import com.games.bomber_man.drawer_elements.BreakableWall
 
 class Application : Application() {
 
     private lateinit var wall: Bitmap
     private lateinit var breakableWall: Bitmap
+    private lateinit var breakableWallAnimation: Bitmap
     private lateinit var door: Bitmap
     private lateinit var explosion: Bitmap
 
@@ -32,7 +34,8 @@ class Application : Application() {
         bomb = Bitmap.createBitmap(resource, 0, heightTitle * 3, widthTitle * 3, heightTitle)
 
         wall = Bitmap.createBitmap(resource, widthTitle * 3, heightTitle * 3, widthTitle, heightTitle)
-        breakableWall = Bitmap.createBitmap(resource, widthTitle * 4, heightTitle * 3, widthTitle * 7, heightTitle)
+        breakableWall = Bitmap.createBitmap(resource, widthTitle * 4, heightTitle * 3, widthTitle, heightTitle)
+        breakableWallAnimation = Bitmap.createBitmap(resource, widthTitle * 5, heightTitle * 3, widthTitle * 6, heightTitle)
 
         door = Bitmap.createBitmap(resource, widthTitle * 11, heightTitle * 3, widthTitle, heightTitle)
 
@@ -43,6 +46,10 @@ class Application : Application() {
         enemies = Bitmap.createBitmap(resource, 0, heightTitle * 15, widthTitle * 11, heightTitle * 8)
 
         score = Bitmap.createBitmap(resource, widthTitle * 7, heightTitle * 21, widthTitle * 3, heightTitle * 2)
+    }
+
+    fun getBreakableAnimation(): Bitmap{
+        return breakableWallAnimation
     }
 
     fun getScore(): Bitmap{

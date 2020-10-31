@@ -8,10 +8,8 @@ import android.os.Build
 import android.util.Log
 import android.view.SurfaceHolder
 import androidx.annotation.RequiresApi
-import com.games.bomber_man.drawer_elements.Arrows
-import com.games.bomber_man.drawer_elements.Bomber
-import com.games.bomber_man.drawer_elements.Score
-import com.games.bomber_man.drawer_elements.Wall
+import androidx.fragment.app.Fragment
+import com.games.bomber_man.drawer_elements.*
 import com.games.bomber_man.game_engine.GameView
 import com.games.bomber_man.game_engine.MainThread
 import com.games.bomber_man.utils.*
@@ -23,14 +21,13 @@ class GameDrawer(
     private val heightScreen: Int,
     private val level: Int,
     private val lives: Int
-) : GameView(contextApp) {
+) : GameView(contextApp){
 
-    private var speedBomber = 15
+    private var speedBomber = 10
     private var wallsVelocity = 0
 
     private val widthField = 31 * (widthScreen / 16)
     private val heightFieldScore = heightScreen / 10
-    private val heightGameField = heightScreen - heightFieldScore
 
     private val widthGameTitle = widthScreen / 16
     private val heightGameTitle = (heightScreen - heightFieldScore) / 13
@@ -38,6 +35,7 @@ class GameDrawer(
     private val mainThread = MainThread(this)
     private lateinit var bomber: Bomber
     private lateinit var wall: Wall
+    private lateinit var breakableWall: BreakableWall
 
     private var field = SetFieldWalls().setField()
     private var bomberCoordinates = arrayOf(heightGameTitle * 2 + heightFieldScore, widthGameTitle * 2)
@@ -50,8 +48,25 @@ class GameDrawer(
     private val gameInputObserver: GameInputObserver = object : GameInputObserver{
 
         override fun upAction() {
-            bomberCoordinates[0] = bomberCoordinates[0] - speedBomber
             bomber.setAction(actionButton)
+
+            val i = (bomberCoordinates[0] - speedBomber - heightFieldScore) / heightGameTitle - 1
+            val j = (bomberCoordinates[1] - widthGameTitle / 2 + (-1) * wallsVelocity) / widthGameTitle
+
+            if(field[i][j] in 1..2){
+                val upperBorder = heightFieldScore + heightGameTitle * (i + 1)
+                if(upperBorder <= bomberCoordinates[0] - speedBomber - heightGameTitle
+                    && bomberCoordinates[0] - heightGameTitle - speedBomber - upperBorder >= speedBomber){
+                    bomberCoordinates[0] = bomberCoordinates[0] - speedBomber
+                }else if(upperBorder <= bomberCoordinates[0] - speedBomber - heightGameTitle
+                    && bomberCoordinates[0] - heightGameTitle - speedBomber - upperBorder > 0){
+                    val difference = bomberCoordinates[0] - heightGameTitle - speedBomber - upperBorder
+                    bomberCoordinates[0] = bomberCoordinates[0] - difference
+                }
+            }else{
+                bomberCoordinates[0] = bomberCoordinates[0] - speedBomber
+            }
+
             bomber.setBomberRect(Rect(
                 bomberCoordinates[1] - widthGameTitle,
                 bomberCoordinates[0] - heightGameTitle,
@@ -61,8 +76,25 @@ class GameDrawer(
         }
 
         override fun downAction() {
-            bomberCoordinates[0] = bomberCoordinates[0] + speedBomber
             bomber.setAction(actionButton)
+
+            val i = (bomberCoordinates[0] + speedBomber - heightFieldScore) / heightGameTitle
+            val j = (bomberCoordinates[1] - widthGameTitle / 2 + (-1) * wallsVelocity) / widthGameTitle
+
+            if(field[i][j] in 1..2){
+                val downBorder = heightFieldScore + heightGameTitle * i
+                if(downBorder >= bomberCoordinates[0] + speedBomber - heightGameTitle
+                    && downBorder - bomberCoordinates[0] - heightGameTitle + speedBomber >= speedBomber){
+                    bomberCoordinates[0] = bomberCoordinates[0] + speedBomber
+                }else if(downBorder >= bomberCoordinates[0] + speedBomber - heightGameTitle
+                    && downBorder - bomberCoordinates[0] - heightGameTitle + speedBomber > 0){
+                    val difference = downBorder - bomberCoordinates[0] - heightGameTitle + speedBomber
+                    bomberCoordinates[0] = bomberCoordinates[0] + difference
+                }
+            }else{
+                bomberCoordinates[0] = bomberCoordinates[0] + speedBomber
+            }
+
             bomber.setBomberRect(Rect(
                 bomberCoordinates[1] - widthGameTitle,
                 bomberCoordinates[0] - heightGameTitle,
@@ -72,12 +104,31 @@ class GameDrawer(
         }
 
         override fun rightAction() {
-            if(bomberCoordinates[1] >= widthGameTitle * 12 && bomberCoordinates[1] + (-1) * wallsVelocity <= widthGameTitle * 27){
-                wallsVelocity -= speedBomber
-                wall.setNewWallsRect(wallsVelocity)
+            var move = 0
+            bomber.setAction(actionButton)
+
+            val i = (bomberCoordinates[0] - heightFieldScore - heightGameTitle / 2) / heightGameTitle
+            val j = (bomberCoordinates[1] + (-1) * wallsVelocity) / widthGameTitle
+
+            if(field[i][j] in 1..2){
+                val rightBorder = widthGameTitle * j
+                if(rightBorder >= bomberCoordinates[1] + speedBomber - wallsVelocity
+                    && rightBorder - bomberCoordinates[1] + speedBomber - wallsVelocity >= speedBomber){
+                    move = speedBomber
+                }else if(rightBorder >= bomberCoordinates[1] + speedBomber - wallsVelocity
+                    && rightBorder - bomberCoordinates[1] + speedBomber - wallsVelocity > 0){
+                    move = rightBorder - bomberCoordinates[1] + speedBomber - wallsVelocity
+                }
             }else{
-                bomberCoordinates[1] = bomberCoordinates[1] + speedBomber
-                bomber.setAction(actionButton)
+                move = speedBomber
+            }
+
+            if(bomberCoordinates[1] >= widthGameTitle * 12 && bomberCoordinates[1] + (-1) * wallsVelocity <= widthGameTitle * 27){
+                wallsVelocity -= move
+                wall.setNewWallsRect(wallsVelocity)
+                breakableWall.setNewWallsRect(wallsVelocity)
+            }else{
+                bomberCoordinates[1] = bomberCoordinates[1] + move
                 bomber.setBomberRect(Rect(
                     bomberCoordinates[1] - widthGameTitle,
                     bomberCoordinates[0] - heightGameTitle,
@@ -88,12 +139,32 @@ class GameDrawer(
         }
 
         override fun leftAction() {
-            if(bomberCoordinates[1] <= widthGameTitle * 5 && bomberCoordinates[1] - wallsVelocity >= widthGameTitle * 5){
-                wallsVelocity += speedBomber
-                wall.setNewWallsRect(wallsVelocity)
+            bomber.setAction(actionButton)
+
+            var move = 0
+
+            val i = (bomberCoordinates[0] - heightFieldScore - heightGameTitle / 2) / heightGameTitle
+            val j = (bomberCoordinates[1] + (-1) * wallsVelocity) / widthGameTitle - 1
+
+            if(field[i][j] in 1..2){
+                val rightBorder = widthGameTitle * j
+                if(rightBorder >= bomberCoordinates[1] - speedBomber - wallsVelocity
+                    && bomberCoordinates[1] - speedBomber - wallsVelocity - rightBorder >= speedBomber){
+                    move = speedBomber
+                }else if(rightBorder >= bomberCoordinates[1] - speedBomber - wallsVelocity
+                    && bomberCoordinates[1] - speedBomber - wallsVelocity - rightBorder > 0){
+                    move = bomberCoordinates[1] - speedBomber - wallsVelocity - rightBorder
+                }
             }else{
-                bomberCoordinates[1] = bomberCoordinates[1] - speedBomber
-                bomber.setAction(actionButton)
+                move = speedBomber
+            }
+
+            if(bomberCoordinates[1] <= widthGameTitle * 5 && bomberCoordinates[1] - wallsVelocity >= widthGameTitle * 5){
+                wallsVelocity += move
+                wall.setNewWallsRect(wallsVelocity)
+                breakableWall.setNewWallsRect(wallsVelocity)
+            }else{
+                bomberCoordinates[1] = bomberCoordinates[1] - move
                 bomber.setBomberRect(Rect(
                     bomberCoordinates[1] - widthGameTitle,
                     bomberCoordinates[0] - heightGameTitle,
@@ -145,8 +216,21 @@ class GameDrawer(
             resources = contextApp.resources
         )
 
+        breakableWall = BreakableWall(
+            widthField  = widthField,
+            heightField = heightFieldScore,
+            wallBitmap = applicationClass.getBreackableWall(),
+            animationBitmap = applicationClass.getBreakableAnimation(),
+            field = field,
+            heightWall = heightGameTitle,
+            widthWall = widthGameTitle,
+            resources = contextApp.resources,
+            level = level
+        )
+
         arrayDraws.add(Score(widthScreen, heightFieldScore, lives, contextApp))
         arrayDraws.add(wall)
+        arrayDraws.add(breakableWall)
         arrayDraws.add(bomber)
         arrayDraws.add(Arrows(widthScreen, heightScreen, resources))
     }
